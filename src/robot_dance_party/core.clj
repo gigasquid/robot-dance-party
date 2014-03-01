@@ -170,7 +170,7 @@
   (change-melody-sounds [])
 
   (change-bass-sounds [dirty-kick daft-kick])
-  (change-melody-sounds [saw2 plucked-string])
+  (change-melody-sounds [plucked-string])
 
   (stop))
 
@@ -197,11 +197,11 @@
 (comment
   ;;Control the dubstep synth with the following:
   (def d (dubstep))
-  (ctl d :wobble 2)
   (ctl d :wobble 8)
+  (ctl d :wobble 0)
   (ctl d :note 40)
   (ctl d :bpm 40)
-  (ctl d :v 0.1)
+  (ctl d :v 0.4)
   (kill d)
   (stop))
 
