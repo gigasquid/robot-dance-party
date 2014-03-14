@@ -1,6 +1,18 @@
 (ns robot-dance-party.core
   (:use [overtone.live]
-        [overtone.inst.sampled-piano]))
+        [overtone.inst.sampled-piano])
+  (:require [ellipso.core :as core]
+            [ellipso.commands :as commands]))
+
+(def sphero (core/connect "/dev/rfcomm0"))
+
+(core/disconnect sphero)
+
+(commands/execute sphero (commands/colour 0xFF0000)) ;;red
+(commands/execute sphero (commands/colour 0xFF8000)) ;;yellow
+(commands/execute sphero (commands/colour 0x0000FF)) ;;blue
+(commands/execute sphero (commands/colour 0xFF00FF)) ;;purple
+
 
 (def piano sampled-piano)
 
@@ -16,7 +28,7 @@
     (* amp (env-gen (perc 0.0001 dur)) reverb)))
 
 (defsynth saw-wave [freq 440 attack 0.01 sustain 0.03 release 0.1 amp 0.8 out-bus 0]
-  (let [env  (env-gen (lin-env attack sustain release) 1 1 0 1 FREE)
+  (let [env  (env-gen (lin attack sustain release) 1 1 0 1 FREE)
         src  (mix (saw [freq (* 1.01 freq)]))
         src  (lpf src (mouse-y 100 2000))
         sin  (sin-osc (* 2 freq))
@@ -120,6 +132,7 @@
     (reset! next-melody song)
     (bass-loop-player m)
     (robot-loop-player m)
+    (sphero-loop-player m (cycle rainbow) (cycle sphero-moves))
     (melody-loop-player m song @next-melody)))
 
 (def theme  (concat
@@ -136,8 +149,39 @@
               repetition-b3
               repetition-b3))
 
+(def rainbow
+  (map commands/colour [0xFF0000 0xFF8000 0xFFFF00 0x00FF00 0x0000FF 0x8000FF 0xFF00FF]))
+(def sphero-moves
+  [(commands/roll 0x4B 0) (commands/roll 0x4B 180)])
 
-(stop)
+
+(defn sphero-loop-player
+  [beat colors moves]
+  (let [ next-beat (+ 16 beat)]
+    (at (metro beat)
+        (commands/execute sphero (first colors))
+        (commands/execute sphero (first moves)))
+    (apply-at (metro next-beat) #'sphero-loop-player [next-beat (rest colors) (rest moves)])))
+
+
+(defn all-stop []
+  (stop)
+  (commands/execute sphero (commands/roll 0x00 180)))
+
+(all-stop)
+
+(commands/execute sphero (commands/roll 0x30 0))
+(commands/execute sphero (commands/roll 0x00 0))
+(commands/execute sphero (commands/roll 0x30 180))
+(commands/execute sphero (commands/roll 0 180))
+
+(commands/execute sphero (commands/roll 0x64 0))
+(commands/execute sphero (commands/roll 0x64 180))
+
+(commands/execute sphero (commands/roll 0x00 180))
+
+
+
 
 (comment
 
@@ -174,34 +218,4 @@
 
   (stop))
 
-
-;;;;
-
-(defsynth dubstep [bpm 113 wobble 0 note 40 snare-vol 1 kick-vol 1 v 1 out-bus 0]
- (let [trig (impulse:kr (/ bpm 113))
-       freq (midicps note)
-       swr (demand trig 0 (dseq [wobble] INF))
-       sweep (lin-exp (lf-tri swr) -1 1 40 3000)
-       wob (apply + (saw (* freq [0.99 1.01])))
-       wob (lpf wob sweep)
-       wob (* 0.8 (normalizer wob))
-       wob (+ wob (bpf wob 1500 2))
-       wob (+ wob (* 0.2 (g-verb wob 9 0.7 0.7)))
-
-       kickenv (decay (t2a (demand (impulse:kr (/ bpm 113)) 0 (dseq [1 0 0 0 0 0 1 0 1 0 0 1 0 0 0 0] INF))) 0.7)
-       kick (* (* kickenv 7) (sin-osc (+ 40 (* kickenv kickenv kickenv 200))))
-       kick (clip2 kick 1)]
-
-   (out out-bus    (* v (clip2 (+ wob) 1)))))
-
-(comment
-  ;;Control the dubstep synth with the following:
-  (def d (dubstep))
-  (ctl d :wobble 8)
-  (ctl d :wobble 0)
-  (ctl d :note 40)
-  (ctl d :bpm 40)
-  (ctl d :v 0.4)
-  (kill d)
-  (stop))
 
