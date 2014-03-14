@@ -23,14 +23,17 @@
   [(commands/roll 0x4B 0) (commands/roll 0x4B 180)])
 
 (defn sphero-loop-player
-  [beat colors angle]
-  (let [next-beat (+ 4 beat)]
+  [beat colors angle count angle-incr]
+  (let [next-beat (+ 4 beat)
+        new-angle (if (< angle 360) (+ angle 360) angle)
+        new-angle-incr (if (zero? (mod count 12)) (* angle-incr -1) angle-incr)
+        good-angle (if (zero? (mod count 12)) (* new-angle -1) new-angle)]
     (at (metro beat)
         (commands/execute sphero (first colors))
-        (commands/execute sphero (commands/roll 0x4B (mod angle 360)))
+        (commands/execute sphero (commands/roll 0x4B (mod good-angle 360)))
         ;(commands/execute sphero (first moves))
         )
-    (apply-at (metro next-beat) #'sphero-loop-player [next-beat (rest colors) (+ angle 30)])))
+    (apply-at (metro next-beat) #'sphero-loop-player [next-beat (rest colors) (+ good-angle new-angle-incr) (inc count) new-angle-incr])))
 
 
 
@@ -39,7 +42,7 @@
     (reset! next-melody song)
     (bass-loop-player m)
     (robot-loop-player m)
-    (sphero-loop-player m (cycle rainbow) 0)
+    (sphero-loop-player m (cycle rainbow) 0 0 30)
     (melody-loop-player m song @next-melody)))
 
 
