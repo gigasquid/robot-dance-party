@@ -4,10 +4,27 @@
         [robot-dance-party.music])
   (:require
             [ellipso.core :as core]
-            [ellipso.commands :as commands]))
+            [ellipso.commands :as commands])
+  (:import roombacomm.RoombaCommSerial))
 
 (comment
-  (def sphero (core/connect "/dev/rfcomm0"))
+(def roomba (RoombaCommSerial. ))
+
+;;Find your port for your Roomba
+(map println (.listPorts roomba))
+
+(def portname "/dev/rfcomm0")
+(.connect roomba portname)
+(.startup roomba)  ;;puts Roomba in safe Mode
+;; What mode is Roomba in?
+(.modeAsString roomba)
+(.control roomba)
+(.updateSensors roomba) ; returns true if you are connected
+(.playNote roomba 72 40)
+(.disconnect roomba)
+
+  
+  (def sphero (core/connect "/dev/rfcomm1"))
 
   (core/disconnect sphero)
 
@@ -35,6 +52,16 @@
         )
     (apply-at (metro next-beat) #'sphero-loop-player [next-beat (rest colors) (+ good-angle new-angle-incr) (inc count) new-angle-incr])))
 
+(defn roomba-loop-player
+  [beat turn]
+  (let [next-beat (+ 8 beat)]
+    (at (metro beat)
+        (if turn
+          (.spinLeft roomba)
+          (.spinRight roomba))
+        )
+    (.playNote roomba 72 40)
+    (apply-at (metro next-beat) #'roomba-loop-player [next-beat (not turn)])))
 
 
 (defn go-play [beat song]
@@ -42,12 +69,14 @@
     (reset! next-melody song)
     (bass-loop-player m)
     (robot-loop-player m)
+    (roomba-loop-player m true)
     (sphero-loop-player m (cycle rainbow) 0 0 30)
     (melody-loop-player m song @next-melody)))
 
 
 (defn all-stop []
   (stop)
+  (.stop roomba)
   (commands/execute sphero (commands/roll 0x00 180)))
 
 (comment  (all-stop)

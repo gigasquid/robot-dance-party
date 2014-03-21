@@ -5,5 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [ellipso "0.1.2-SNAPSHOT"]
-                 [overtone "0.9.1"]]
+                 [overtone "0.9.1"]
+                 [roombacomm "0.96"]
+                 [rxtx22 "1.0.6"]]
   :jvm-opts ^:replace [])
