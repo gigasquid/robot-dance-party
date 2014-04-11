@@ -36,7 +36,7 @@
   ;; init the sphero
   (def sphero (core/connect "/dev/rfcomm1"))
 
-  (core/disconnect sphero)
+  ;(core/disconnect sphero)
 
   (commands/execute sphero (commands/colour 0xFF0000)) ;;red
   (commands/execute sphero (commands/colour 0xFF8000)) ;;yellow
@@ -75,6 +75,8 @@
   (change-roomba-moves [ #(.spinRight %) #(.spinLeft %)])
   (change-roomba-moves [ #(.stop %)])
   (change-drone-moves [])
+  (change-sphero-moves (map commands/colour [RED YELLOW BLUE PURPLE]))
+  (change-sphero-moves [(commands/roll 0x4B 0) (commands/roll 0x4B 180)])
   
   (change-melody-sounds [])
   (change-bass-sounds [tick])
