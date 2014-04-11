@@ -16,7 +16,7 @@
   [beat movelist sphero metro]
   (let [next-beat (+ 16 beat)
         moves (first movelist)
-        next-moves (or (rest movelist) @sphero-moves)]
+        next-moves (or (next movelist) @sphero-moves)]
     (ov/at (metro beat)
         (when moves
           (if (seq? moves)

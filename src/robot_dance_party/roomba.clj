@@ -9,7 +9,7 @@
   [beat movelist roomba metro]
   (let [next-beat (+ 8 beat)
         move (first movelist)
-        next-moves (or (rest movelist) @roomba-moves)]
+        next-moves (or (next movelist) @roomba-moves)]
     (ov/at (metro beat)
         (when move
           (move roomba)))

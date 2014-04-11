@@ -7,5 +7,6 @@
                  [ellipso "0.1.2-SNAPSHOT"]
                  [overtone "0.9.1"]
                  [roombacomm "0.96"]
-                 [rxtx22 "1.0.6"]]
+                 [rxtx22 "1.0.6"]
+                 [clj-drone "0.1.8"]]
   :jvm-opts ^:replace [])
