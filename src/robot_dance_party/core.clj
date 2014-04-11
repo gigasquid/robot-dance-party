@@ -1,7 +1,9 @@
 (ns robot-dance-party.core
   (:use [overtone.live]
         [overtone.inst.sampled-piano]
-        [robot-dance-party.music])
+        [robot-dance-party.music]
+        [robot-dance-party.sphero]
+        [robot-dance-party.roomba])
   (:require
             [ellipso.core :as core]
             [ellipso.commands :as commands])
@@ -35,41 +37,6 @@
   (commands/execute sphero (commands/colour 0xFF0000)) ;;red
   (commands/execute sphero (commands/colour 0xFF8000)) ;;yellow
 ) 
-
-(def RED 0xFF0000)
-(def YELLOW 0xFF8000)
-(def BLUE 0x0000FF)
-(def PURPLE 0xFF00FF)
-
-
-(def sphero-moves (atom []))
-(defn change-sphero-moves [moves] (reset! sphero-moves moves))
-
-(defn sphero-loop-player
-  [beat movelist]
-  (let [next-beat (+ 16 beat)
-        moves (first movelist)
-        next-moves (or (rest movelist) @sphero-moves)]
-    (at (metro beat)
-        (when moves
-          (if (seq? moves)
-           (doseq [move moves]
-             (commands/execute sphero move))
-           (commands/execute sphero moves))))
-    (apply-at (metro next-beat) #'sphero-loop-player [next-beat next-moves])))
-
-(def roomba-moves (atom []))
-(defn change-roomba-moves [move-list] (reset! roomba-moves move-list))
-
-(defn roomba-loop-player
-  [beat movelist]
-  (let [next-beat (+ 8 beat)
-        move (first movelist)
-        next-moves (or (rest movelist) @roomba-moves)]
-    (at (metro beat)
-        (when move
-          (move roomba)))
-    (apply-at (metro next-beat) #'roomba-loop-player [next-beat next-moves])))
 
 
 (defn go-play [beat song]
