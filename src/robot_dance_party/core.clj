@@ -15,11 +15,8 @@
 (declare roomba)
 (declare sphero)
 
-;; qjackctl
-;; pulseaudio --kill
-;; pulseaudio --start
-
 (comment
+  ;; Comm check for everyone!!
   ;; init the roomba
   (def roomba (RoombaCommSerial. ))
 
@@ -51,6 +48,7 @@
 
   ;; music
   (piano (note :E4))
+
   )
 
 
@@ -78,17 +76,9 @@
 
 (comment
 
-  (change-drone-moves [:anim-double-phi-theta-mixed])
-  (change-roomba-moves [ #(.spinRight %) #(.spinLeft %)])
-  (change-roomba-moves [ #(.stop %)])
-  (change-drone-moves [])
-  (change-sphero-moves (map commands/colour [RED YELLOW BLUE PURPLE]))
-  (change-sphero-moves [(commands/roll 0x4B 0) (commands/roll 0x4B 180)])
+  ;; Introduction - Music in Overtone
 
-  (change-bass-sounds [tick])
   (go-play (metro) repetition-a)
-  (change-robot-sounds [robot-ready])
-  (change-robot-sounds [])
   (change-melody-sounds [saw2])
 
   (change-melody (transpose -5 repetition-a))
@@ -103,38 +93,73 @@
   (change-melody repetition-b)
   (change-melody repetition-a)
 
-
-  (change-bass-sounds [daft-kick])
+  ;; Part 1: Dance with Sphero
   (change-melody-sounds [])
   (change-robot-sounds [robot-ready])
+  (change-sphero-moves (map commands/colour [RED YELLOW BLUE PURPLE]))
+  (change-melody theme)
   (change-robot-sounds [])
-  (change-melody theme)
-  (change-melody-sounds [ping])
-  (change-bass-sounds [])
-  (change-melody-sounds [bass])
-  (change-melody-sounds [bass ping])
-  (change-melody-sounds [bass])
+  (change-melody-sounds [saw2])
+  (change-sphero-moves [(commands/roll 0x4B 0) (commands/roll 0x4B 180)])
+  (change-sphero-moves [(commands/roll 0x4B 90) (commands/roll 0x4B 270)])
+  (change-sphero-moves [(commands/roll 0x4B 0) (commands/roll 0x4B 180)])
+  (change-sphero-moves [[(commands/colour RED) (commands/roll 0x4B 0)]
+                        [(commands/colour BLUE) (commands/roll 0x4B 180)]])
+  (change-sphero-beat 8)
+  (sphero-stop sphero)
+  (change-melody-sounds [])
+
+  ;; Part 2: Dance with Roomba
+
   (change-bass-sounds [daft-kick])
-  (change-melody-sounds [])
-  (change-bass-sounds [daft-kick bass])
+  (change-robot-sounds [robot-ready])
+  (change-roomba-moves [ #(.spinRight %) #(.spinLeft %)])
+  (change-robot-sounds [])
+  (change-melody-sounds [ping])
 
+  ;; Roomba & sphero
+  (change-sphero-beat 16)
+  (change-sphero-moves [(commands/roll 0x4B 0) (commands/roll 0x4B 180)])
+
+  (change-sphero-beat 8)
+  (change-roomba-beat 8)
+  (roomba-stop roomba)
+  (sphero-stop sphero)
+
+
+  ;; Drone
+  (change-melody-sounds [])
   (change-bass-sounds [dirty-kick])
+  (change-robot-sounds [robot-ready])
+  (drone-get-ready)
+  (drone :take-off)
+  (change-robot-sounds [])
+  (change-melody-sounds [bass])
+  (change-drone-moves [:anim-double-phi-theta-mixed])
 
-  
-  (change-melody-sounds [piano])
-  (change-bass-sounds [])
-  (change-melody theme)
+  ;; Drone  + Roomba
+  (change-drone-moves [:hover])
+  (change-roomba-beat 16)
+  (change-roomba-moves [ #(.goForward %) #(.goBackward %)])
+  (change-roomba-moves [ #(.spinRight %)])
+  (change-roomba-moves [ #(.spinRight %) #(.spinLeft %)])
+  (change-bass-sounds [dirty-kick daft-kick])
   (change-melody-sounds [])
 
-  (change-bass-sounds [dirty-kick daft-kick])
+
+  ;; Drone + Roomba + Sphero
+  (change-robot-sounds [robot-ready])
+  (change-sphero-beat 16)
+  (change-sphero-moves [[(commands/colour RED) (commands/roll 0x4B 0)]
+                        [(commands/colour BLUE) (commands/roll 0x4B 180)]])
+  (change-robot-sounds [])
   (change-melody-sounds [piano])
+  (change-drone-moves [:anim-double-phi-theta-mixed])
+  (change-drone-moves [:anim-double-phi-theta-mixed :hover :anim-wave :hover])
 
   (change-drone-moves [])
-  (change-drone-moves [:anim-double-phi-theta-mixed ])
-  (change-drone-moves [:anim-wave ])
-  (change-roomba-moves [ #(.spinRight %) #(.spinLeft %)])
-  (change-sphero-moves (map commands/colour [RED YELLOW BLUE PURPLE]))
-  (change-sphero-moves [(commands/roll 0x4B 0) (commands/roll 0x4B 180)])
+  (drone-do-for 1 :up 0.3)
+  (drone :anim-flip-right)
 
   (all-stop))
 
