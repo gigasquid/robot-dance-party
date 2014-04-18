@@ -1,6 +1,7 @@
 (ns robot-dance-party.core
   (:use [overtone.live]
         [overtone.inst.sampled-piano]
+        [overtone.inst.synth]
         [robot-dance-party.music]
         [robot-dance-party.sphero]
         [robot-dance-party.roomba]
@@ -15,6 +16,8 @@
 (declare sphero)
 
 ;; qjackctl
+;; pulseaudio --kill
+;; pulseaudio --start
 
 (comment
   ;; init the roomba
@@ -69,6 +72,10 @@
   (commands/execute sphero (commands/roll 0x00 180)))
 
 
+(change-melody-sounds [])
+(change-bass-sounds [tick])
+(change-robot-sounds [])
+
 (comment
 
   (change-drone-moves [:anim-double-phi-theta-mixed])
@@ -77,15 +84,13 @@
   (change-drone-moves [])
   (change-sphero-moves (map commands/colour [RED YELLOW BLUE PURPLE]))
   (change-sphero-moves [(commands/roll 0x4B 0) (commands/roll 0x4B 180)])
-  
-  (change-melody-sounds [])
+
   (change-bass-sounds [tick])
-  (change-robot-sounds [])
-  (change-melody-sounds [])
   (go-play (metro) repetition-a)
   (change-robot-sounds [robot-ready])
-  (change-melody-sounds [saw2])
   (change-robot-sounds [])
+  (change-melody-sounds [saw2])
+
   (change-melody (transpose -5 repetition-a))
   (change-melody (transpose -10 repetition-a))
   (change-melody repetition-a)
@@ -99,9 +104,23 @@
   (change-melody repetition-a)
 
 
-  (change-bass-sounds [dirty-kick])
+  (change-bass-sounds [daft-kick])
   (change-melody-sounds [])
+  (change-robot-sounds [robot-ready])
+  (change-robot-sounds [])
+  (change-melody theme)
+  (change-melody-sounds [ping])
+  (change-bass-sounds [])
+  (change-melody-sounds [bass])
+  (change-melody-sounds [bass ping])
+  (change-melody-sounds [bass])
+  (change-bass-sounds [daft-kick])
+  (change-melody-sounds [])
+  (change-bass-sounds [daft-kick bass])
 
+  (change-bass-sounds [dirty-kick])
+
+  
   (change-melody-sounds [piano])
   (change-bass-sounds [])
   (change-melody theme)
@@ -112,11 +131,10 @@
 
   (change-drone-moves [])
   (change-drone-moves [:anim-double-phi-theta-mixed ])
-    (change-drone-moves [:anim-wave ])
+  (change-drone-moves [:anim-wave ])
   (change-roomba-moves [ #(.spinRight %) #(.spinLeft %)])
   (change-sphero-moves (map commands/colour [RED YELLOW BLUE PURPLE]))
   (change-sphero-moves [(commands/roll 0x4B 0) (commands/roll 0x4B 180)])
-
 
   (all-stop))
 

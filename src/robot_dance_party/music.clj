@@ -1,19 +1,13 @@
 (ns robot-dance-party.music
   (:use [overtone.live]
-        [overtone.inst.sampled-piano]))
+        [overtone.inst.sampled-piano]
+        [overtone.inst.synth]))
 
+(comment (ping (note :E4))
+         (bass (note :C4))
+         (ks1 (note :C4))
+         (stop))
 (def piano sampled-piano)
-
-(definst plucked-string [note 60 amp 0.8 dur 2 decay 30 coef 0.3 gate 1]
-  (let [freq   (midicps note)
-        noize  (* 0.8 (white-noise))
-        dly    (/ 1.0 freq)
-        plk    (pluck noize gate dly dly decay coef)
-        dist   (distort plk)
-        filt   (rlpf dist (* 12 freq) 0.6)
-        clp    (clip2 filt 0.8)
-        reverb (free-verb clp 0.4 0.8 0.2)]
-    (* amp (env-gen (perc 0.0001 dur)) reverb)))
 
 (defsynth saw-wave [freq 440 attack 0.01 sustain 0.03 release 0.1 amp 0.8 out-bus 0]
   (let [env  (env-gen (lin attack sustain release) 1 1 0 1 FREE)
@@ -61,7 +55,7 @@
 (metro)
 
 
-(def melody-sounds (atom [piano plucked-string]))
+(def melody-sounds (atom []))
 (def next-melody (atom repetition-a))
 
 (defn melody-loop-player
