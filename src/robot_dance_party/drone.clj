@@ -12,6 +12,11 @@
   (drone :target-roundel-v)
   (drone :hover-on-roundel))
 
+(defn drone-follow-roundel []
+  (drone :init-targeting)
+  (drone :target-roundel-v)
+  (drone :hover-on-roundel))
+
 (defn drone-loop-player
   [beat movelist metro]
   (let [next-beat (+ 48 beat)

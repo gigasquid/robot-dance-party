@@ -39,11 +39,19 @@
   (comment  (core/disconnect sphero))
 
   (commands/execute sphero (commands/colour 0xFF0000)) ;;red
-  (commands/execute sphero (commands/colour 0xFF8000)) ;;yellow
+  (commands/execute sphero (commands/colour 0xFF8000))
+  (commands/execute sphero (commands/roll 0 0))
+  (commands/execute sphero (commands/roll 0x4B 0))
+  (commands/execute sphero (commands/heading 60))
+  
+  (commands/execute sphero (commands/stabilization true))
+
+  ;;yellow
 
   ;;;; drone
   (drone-get-ready)
   (drone :take-off)
+  (drone :anim-flip-right)
   (drone :land)
 
   ;; music
@@ -67,7 +75,7 @@
   (stop)
   (drone :land)
   (.stop roomba)
-  (commands/execute sphero (commands/roll 0x00 180)))
+  (commands/execute sphero (commands/roll 0 180)))
 
 
 (change-melody-sounds [])
@@ -107,9 +115,8 @@
   (change-melody-sounds [saw2])
   (change-sphero-moves [(commands/roll 0x4B 0) (commands/roll 0x4B 180)])
   (change-sphero-moves [(commands/roll 0x4B 90) (commands/roll 0x4B 270)])
-  (change-sphero-moves [(commands/roll 0x4B 0) (commands/roll 0x4B 180)])
   (change-sphero-beat 8)
-    (change-sphero-moves [])
+  (change-sphero-moves [])
   (sphero-stop sphero)
   (change-melody-sounds [])
 
@@ -163,11 +170,12 @@
   (change-drone-moves [:anim-double-phi-theta-mixed])
   (change-drone-moves [:anim-double-phi-theta-mixed :hover :anim-wave :hover])
 
+  (change-drone-moves [:anim-flip-right :hover :hover :hover])
   (change-drone-moves [])
   (drone-do-for 2 :up 0.3)
   (drone :anim-flip-right)
+  (drone :hover)
   (drone :land)
-
   (all-stop))
 
 
