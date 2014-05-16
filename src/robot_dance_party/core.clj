@@ -170,7 +170,6 @@
   (change-drone-moves [:anim-double-phi-theta-mixed])
   (change-drone-moves [:anim-double-phi-theta-mixed :hover :anim-wave :hover])
 
-  (change-drone-moves [:anim-flip-right :hover :hover :hover])
   (change-drone-moves [])
   (drone-do-for 2 :up 0.3)
   (drone :anim-flip-right)
